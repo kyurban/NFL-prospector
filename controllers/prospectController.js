@@ -1,5 +1,6 @@
 const Prospect = require('../models/prospectModel.js');
 
+
 // get all prospects
 const getAllProspects = async (req, res) => {
     try {

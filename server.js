@@ -9,9 +9,15 @@ const prospectRoute = require("./routes/prospectRoute.js");
 // middleware
 app.use(express.json());
 app.use(express.urlencoded({extended: false}))
+app.use(express.static('public'));
 
 //routes
 app.use("/prospects", prospectRoute)
+
+//dashboard
+app.get('/', (req, res) => {
+    res.render(__dirname + '/publc/index.html');
+});
 
 // local host
 app.listen(port, () => {
