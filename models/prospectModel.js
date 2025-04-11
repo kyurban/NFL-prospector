@@ -1,19 +1,36 @@
-const mongoose = require("mongoose");
+const { DataTypes } = require('sequelize');
+const sequelize = require('../db');
 
-const ProspectSchema = new mongoose.Schema({
-        first_name: String,
-        last_name: String,
-        position: String,
-        college: String,
-        age: Number,
-        height: String,
-        weight: String
+const Prospect = sequelize.define('Prospect', {
+        first_name: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        last_name: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        position: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        college: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        age: {
+            type: DataTypes.INTEGER,
+        },
+        height: {
+            type: DataTypes.STRING,
+        },
+        'weight(lbs)': {
+            type: DataTypes.STRING,
+        }
     },
     {
-        collection: 'draft-prospects'
-    }
-)
-
-const Prospect = mongoose.model("Prospect", ProspectSchema);
+        tableName: 'draft-prospects',
+        timestamps: false,
+    });
 
 module.exports = Prospect;

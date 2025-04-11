@@ -1,8 +1,6 @@
 const express = require("express");
-const mongoose = require("mongoose");
+const sequelize = require('./db');
 const port = process.env.PORT;
-const password = process.env.DB_PASSWORD;
-const username = process.env.NAME;
 const app = express();
 const prospectRoute = require("./routes/prospectRoute.js");
 
@@ -16,7 +14,7 @@ app.use("/prospects", prospectRoute)
 
 //dashboard
 app.get('/', (req, res) => {
-    res.render(__dirname + '/publc/index.html');
+    res.sendFile(__dirname + '/publc/index.html');
 });
 
 // local host
@@ -25,10 +23,6 @@ app.listen(port, () => {
 });
 
 // DB connection
-mongoose.connect(`mongodb+srv://${username}:${password}@2025-nfl-draft-prospect.n8lhray.mongodb.net/draft-prospects?retryWrites=true&w=majority&appName=2025-NFL-draft-prospects`)
-    .then(() => {
-        console.log("DB connected successfully");
-    })
-    .catch(() => {
-        console.log("DB connection failed");
-    });
+sequelize.sync()
+  .then(() => console.log('Database synced'))
+  .catch((error) => console.log('Error syncing database:', error));

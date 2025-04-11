@@ -1,10 +1,11 @@
+const { Sequelize } = require('sequelize');
 const Prospect = require('../models/prospectModel.js');
 
 
 // get all prospects
 const getAllProspects = async (req, res) => {
     try {
-        const prospects = await Prospect.find();
+        const prospects = await Prospect.findAll();
         res.status(200).json(prospects);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -14,8 +15,8 @@ const getAllProspects = async (req, res) => {
 // get prospects by id
 const getProspectById = async (req, res) => {
     try {
-        const prospect = await Prospect.findById(req.params.id);
-        if (!prospect || prospects.length === 0) {
+        const prospect = await Prospect.findByPk(req.params.id);
+        if (!prospect || prospect.length === 0) {
             return res.status(404).json({ message: 'Prospect not found' });
         }
         res.status(200).json(prospect);
@@ -28,7 +29,11 @@ const getProspectById = async (req, res) => {
 const getProspectByFirstName = async (req, res) => {
     try {
         const name = req.params.first_name
-        const prospects = await Prospect.find({first_name: { $regex: name, $options: 'i'}});
+        const prospects = await Prospect.findAll({
+            where: {
+                first_name: { [Sequelize.Op.like]: `%${name}%`}
+            }
+        });
         if (!prospects || prospects.length === 0) {
             return res.status(404).json({ message: 'Prospect(s) not found' });
         }
@@ -42,7 +47,11 @@ const getProspectByFirstName = async (req, res) => {
 const getProspectByLastName = async (req, res) => {
     try {
         const name = req.params.last_name;
-        const prospects = await Prospect.find({last_name: {$regex: name, $options: 'i'}});
+        const prospects = await Prospect.findAll({
+            where: {
+                last_name: { [Sequelize.Op.like]: `%${name}%`}
+            }
+        });
         if (!prospects || prospects.length === 0) {
             res.status(404).json({ message: 'Prospect(s) Not Found' });
         }
@@ -56,7 +65,12 @@ const getProspectByLastName = async (req, res) => {
 const getProspectByFullName = async (req, res) => {
     try {
         const {first, last} = req.query;
-    const prospects = await Prospect.find({first_name: {$regex: first, $options: 'i'}, last_name: {$regex: last, $options: 'i'}});
+        const prospects = await Prospect.findAll({
+        where: {
+            first_name: { [Sequelize.Op.like]: `%${first}%`},
+            last_name: { [Sequelize.Op.like]: `%${last}%`}
+        }
+    });
     if (!prospects || prospects.length === 0) {
         res.status(404).json({ message: 'Prospect(s) Not Found' });
     }
@@ -70,7 +84,11 @@ const getProspectByFullName = async (req, res) => {
 const getProspectByPos = async (req,res) => {
     try {
         const pos = req.params.position;
-        const prospects = await Prospect.find({position: {$regex: `${pos}$`, $options: 'i'}})
+        const prospects = await Prospect.findAll({
+            where: {
+                position: pos,
+            }
+        });
         if (!prospects || prospects.length === 0) {
             res.status(404).json({ message: 'Prospect(s) Not Found'})
         }
@@ -84,7 +102,11 @@ const getProspectByPos = async (req,res) => {
 const getProspectByCollege = async (req, res) => {
     try {
         const college = req.params.college;
-        const prospects = await Prospect.find({college: {$regex: college, $options: 'i'}});
+        const prospects = await Prospect.findAll({
+            where: {
+                college: {[Sequelize.Op.like]: `%${college}%`}
+            }
+        });
         if (!prospects || prospects.length === 0) {
             res.status(404).json({ message: 'Prospect(s) Not Found'});
         }
@@ -98,10 +120,14 @@ const getProspectByCollege = async (req, res) => {
 const getProspectByAge = async (req, res) => {
     try {
         const age = req.params.age;
-        const prospects = await Prospect.find({age: age});
+        const prospects = await Prospect.findAll({
+            where: {
+                age: age,
+            }
+        });
         if (!prospects || prospects.length === 0) {
             if (age < 20) {
-                res.status(404).json({ message: 'Prospects under 20 years old ineligable for draft'});
+                res.status(404).json({ message: 'Prospects under 20 years old ineligible for draft'});
             }
             res.status(404).json({ message: 'Prospect(s) Not Found'});
         }
@@ -115,7 +141,11 @@ const getProspectByAge = async (req, res) => {
 const getProspectByHeight = async (req, res) => {
     try {
         const height = req.params.height;
-        const prospects = await Prospect.find({height: {$regex: `^${height}`}})
+        const prospects = await Prospect.findAll({
+            where: {
+                height: {[Sequelize.Op.like]: `%${height}%`}
+            }
+        })
         if (!prospects || prospects.length === 0) {
             res.status(404).json({ message: 'Prospect(s) Not Found'});
         }
@@ -129,7 +159,11 @@ const getProspectByHeight = async (req, res) => {
 const getProspectByWeight = async (req, res) => {
     try {
         const weight = req.params.weight;
-        const prospects = await Prospect.find({"weight(lbs)": {$regex: `^${weight}`}})
+        const prospects = await Prospect.findAll({
+            where: {
+                'weight(lbs)': {[Sequelize.Op.like]: `%${weight}%`}
+            }
+        })
         if (!prospects || prospects.length === 0) {
             res.status(404).json({ message: 'Prospect(s) Not Found'});
         }
@@ -141,12 +175,23 @@ const getProspectByWeight = async (req, res) => {
 
 // create a prospect
 const addProspect = async (req, res) => {
+    const { first_name, last_name, position, college, age, height, weight } = req.body;
     try {
-        const checkProspect = await Prospect.findOne(req.body)
+        const checkProspect = await Prospect.findOne({
+            where: { first_name, last_name, position, college },
+        })
         if (checkProspect) {
             res.status(409).json({ message: 'Prospect already exists'})
         }
-        const prospect = await Prospect.create(req.body);
+        const prospect = await Prospect.create({
+            first_name,
+            last_name,
+            position,
+            college,
+            age,
+            height,
+            weight,
+        });
         res.status(200).json(prospect);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -157,11 +202,16 @@ const addProspect = async (req, res) => {
 const updateProspect = async (req, res) => {
     try {
         const { id } = req.params;
-        const prospect = await Prospect.findByIdAndUpdate(id, req.body, {new:true});
-        if (!id) {
+        const { first_name, last_name, position, college, age, height, weight } = req.body;
+        const [prospect] = await Prospect.update(
+            { first_name, last_name, position, college, age, height, weight },
+            { where: { id } }
+        )
+        if (prospect === 0)  {
             res.status(404).json({ message: 'Prospect(s) Not Found'});
         }
-        res.status(200).json(prospect);
+        const updatedProspect = await Prospect.findByPk(id);
+        res.status(200).json(updatedProspect);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -174,7 +224,9 @@ const deleteProspect = async (req, res) => {
         if (!id) {
             res.status(404).json({ message: 'Prospect(s) Not Found'});
         }
-        await Prospect.findByIdAndDelete(id);
+        await Prospect.destroy({
+            where: { id },
+        });
         res.status(200).json({ message: 'Prospect entry deleted successfully'});
     } catch (error) {
         res.status(500).json({ message: error.message });
