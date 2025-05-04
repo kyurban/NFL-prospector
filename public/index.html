@@ -14,12 +14,92 @@
         <img src="/images/nfl.png" alt="logo" id="logo">
         <h2 id="title">Welcome to NFL Prospector!</p>
         <h2 id="sub-title">Analyze the top 50 prospects of this year’s draft</h3>
-        <button id="get-started-btn"><a href="#player-details">Get Started</a></button>
+        <button id="get-started-btn"><a href="#prospect-details">Get Started</a></button>
     </section>
-    <section id="player-details">
-        <input type="text" id="search-bar" placeholder="Search for a player...">
-        <button id="search-btn">Search</button>
-        <div id="player-list"></div>
+    <section id="prospect-details">
+        <div id="search-criteria">
+            <select id="search-type">
+                <option value="full">Full Name</option>
+                <option value="first_name">First Name</option>
+                <option value="last_name">Last Name</option>
+                <option value="college">College</option>
+                <option value="position">Position</option>
+                <option value="age">Age</option>
+                <option value="height">Height</option>
+                <option value="weight">Weight</option>
+                <option value="all">All</option>
+              </select>
+            <input type="text" id="search-bar" placeholder="Search for a player...">
+            <button id="search-btn">Search</button>
+            <button id="add-btn">Add Player</button>
+        </div>
+        <div id="prospect-list">
+            <table id="prospect-table">
+                <thead id="thead">
+                    <tr id="table-header">
+                        <th class="th">First Name</th>
+                        <th class="th">Last Name</th>
+                        <th class="th">Position</th>
+                        <th class="th">College</th>
+                        <th class="th">Age</th>
+                        <th class="th">Height</th>
+                        <th class="th">Weight(lbs)</th>
+                        <th class="th">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody"></tbody>
+            </table>
+        </div>
     </section>
+
+    <!-- Edit Modal -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+        <span id="close-modal" class="close-btn">&times;</span>
+        <h2>Edit Prospect</h2>
+        <form id="edit-form">
+            <input type="hidden" id="edit-id" />
+
+            <div class="form-group">
+            <label for="edit-first">First Name</label>
+            <input type="text" id="edit-first" />
+            </div>
+
+            <div class="form-group">
+            <label for="edit-last">Last Name</label>
+            <input type="text" id="edit-last" />
+            </div>
+
+            <div class="form-group">
+            <label for="edit-position">Position</label>
+            <input type="text" id="edit-position" />
+            </div>
+
+            <div class="form-group">
+            <label for="edit-college">College</label>
+            <input type="text" id="edit-college" />
+            </div>
+
+            <div class="form-group">
+            <label for="edit-age">Age</label>
+            <input type="number" id="edit-age" />
+            </div>
+
+            <div class="form-group">
+            <label for="edit-height">Height</label>
+            <input type="text" id="edit-height" />
+            </div>
+
+            <div class="form-group">
+            <label for="edit-weight">Weight</label>
+            <input type="number" id="edit-weight" />
+            </div>
+
+            <button type="submit">Save Changes</button>
+        </form>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
 </body>
 </html>

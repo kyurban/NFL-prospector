@@ -24,7 +24,7 @@ const Prospect = sequelize.define('Prospect', {
         height: {
             type: DataTypes.STRING,
         },
-        'weight(lbs)': {
+        weight: {
             type: DataTypes.STRING,
         }
     },

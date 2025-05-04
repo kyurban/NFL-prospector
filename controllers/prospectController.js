@@ -161,7 +161,7 @@ const getProspectByWeight = async (req, res) => {
         const weight = req.params.weight;
         const prospects = await Prospect.findAll({
             where: {
-                'weight(lbs)': {[Sequelize.Op.like]: `%${weight}%`}
+                weight: {[Sequelize.Op.like]: `%${weight}%`}
             }
         })
         if (!prospects || prospects.length === 0) {
@@ -207,9 +207,13 @@ const updateProspect = async (req, res) => {
             { first_name, last_name, position, college, age, height, weight },
             { where: { id } }
         )
-        if (prospect === 0)  {
-            res.status(404).json({ message: 'Prospect(s) Not Found'});
-        }
+        if (prospect === 0) {
+            const exists = await Prospect.findByPk(id);
+            if (!exists) {
+              return res.status(404).json({ message: 'Prospect(s) Not Found' });
+            }
+            return res.status(200).json({ message: 'No changes made' }); // <-- graceful fallback
+          }
         const updatedProspect = await Prospect.findByPk(id);
         res.status(200).json(updatedProspect);
     } catch (error) {
@@ -220,18 +224,23 @@ const updateProspect = async (req, res) => {
 // delete a prospect by id
 const deleteProspect = async (req, res) => {
     try {
-        const { id }= req.params;
-        if (!id) {
-            res.status(404).json({ message: 'Prospect(s) Not Found'});
-        }
-        await Prospect.destroy({
-            where: { id },
-        });
-        res.status(200).json({ message: 'Prospect entry deleted successfully'});
+      const { id } = req.params;
+      if (!id) {
+        return res.status(404).json({ message: 'Prospect(s) Not Found' });
+      }
+  
+      const deleted = await Prospect.destroy({ where: { id } });
+  
+      if (deleted === 0) {
+        return res.status(404).json({ message: 'Prospect(s) Not Found' });
+      }
+  
+      res.status(200).json({ message: 'Prospect entry deleted successfully' });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+      res.status(500).json({ message: error.message });
     }
-}
+  };
+  
 
 module.exports = {
     getAllProspects,
