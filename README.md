@@ -1,6 +1,6 @@
 # NFL Prospector
 
-NFL Prospector is an app designed to manage and evaluate prospects for the 2025 NFL draft. It allows users to track and analyze players' profiles, including their college and position to assist in making draft decisions.
+NFL Prospector is an app designed to manage and evaluate prospects for the 2025 NFL draft. It allows users to create, update, delete, or view prospects' information, including their college and position to assist in making draft decisions.
 
 ## Features
 
